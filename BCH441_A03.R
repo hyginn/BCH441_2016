@@ -1,12 +1,15 @@
 # BCH441_A03.R
 #
-# Purpose:  Supporting scripts for BCH441 (Bioinformatics) at the University of
-# Toronto, Fall 2016 - Assignment 03
+# Purpose:  Supporting scripts for BCH441 (Bioinformatics)
+#           at the University of Toronto, Fall 2016
+#           Assignment 03
 #
-# Version: 1.0
+# Version: 1.2
 #
 # Date:    2016  09 Author:  Boris Steipe (boris.steipe@utoronto.ca)
 #
+# V 1.2    Fixed more typos
+# V 1.1    Fixed typo
 # V 1.0    First code
 #
 # TODO:
@@ -97,7 +100,7 @@ biCode(db$taxonomy$species)
 # what is the species name for the protein
 # whose name is "Mbp1"?
 
-# First, get the taxonomy_id for the Mbp1 protein. This is
+# First, get the taxonomy.ID for the Mbp1 protein. This is
 # the key we need for the taxonomy table. We find it in a cell in the
 # table: db$protein[<row>, <column>]
 # <row> is that row for which the value in
@@ -105,18 +108,18 @@ biCode(db$taxonomy$species)
 
 db$protein$name == "Mbp1" # TRUE FALSE
 
-# The <column> is called "taxonomy_id". Simply
+# The <column> is called "taxonomy.ID". Simply
 # insert these two expressions in the square
 # brackets.
 
-db$protein[db$protein$name == "Mbp1", "taxonomy_id"]
+db$protein[db$protein$name == "Mbp1", "taxonomy.ID"]
 
-# Assign the taxonomy_id value ...
-x <- db$protein[db$protein$name == "Mbp1", "taxonomy_id"]
+# Assign the taxonomy.ID value ...
+x <- db$protein[db$protein$name == "Mbp1", "taxonomy.ID"]
 
 # ... and fetch the species_name value from db$taxonomy
 
-db$taxonomy[db$taxonomy$id == x, "species_name"]
+db$taxonomy[db$taxonomy$ID == x, "species"]
 
 
 # === An excursion into regular expressions ====================================
@@ -142,7 +145,7 @@ mySeq <- "
 
 mySeq     # "\n" means: line-break
 
-mySeq <- gsub("[^a-zA-Z]", "", seq) # replace all non-letters with ""
+mySeq <- gsub("[^a-zA-Z]", "", mySeq) # replace all non-letters with ""
 
 mySeq
 
