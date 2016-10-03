@@ -4,7 +4,7 @@
 # ====================================================================
 
 # if it doesn't exist yet, set up a profile:
-if (length(list.files(pattern=".myProfile.R")) == 0) {
+if (! file.exists(".myProfile.R")) {
     # setup profile data
     cat("\nPlease enter the requested values correctly, no spaces, and\n")
     cat("press <enter>.\n")
