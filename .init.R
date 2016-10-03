@@ -20,6 +20,7 @@ if (! file.exists(".myProfile.R")) {
 }
 
 source(".myProfile.R")
+source(".utilities.R")
 
 file.edit("BCH441_2016.R")
 
