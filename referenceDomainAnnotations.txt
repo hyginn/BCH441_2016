@@ -1,0 +1,70 @@
+ID	protein.ID	feature.ID	start	end	note
+# MBP1_SACCE
+NA	ref_4	ref_1	4	102	APSES fold
+NA	ref_4	ref_2	22	105	KilA-N
+NA	ref_4	ref_4	108	122	low complexity
+NA	ref_4	ref_4	236	241	low complexity
+NA	ref_4	ref_4	279	307	low complexity
+NA	ref_4	ref_4	700	717	low complexity
+NA	ref_4	ref_4	700	717	low complexity
+NA	ref_4	ref_5	394	423	Ankyrin
+NA	ref_4	ref_5	427	463	Ankyrin
+NA	ref_4	ref_5	512	541	Ankyrin
+NA	ref_4	ref_6	381	547	Swi6 fold
+NA	ref_4	ref_7	633	655	coiled coil
+# MBP1_ASPNI
+NA	ref_1	ref_2	23	94	KilA-N
+NA	ref_1	ref_4	529	534	low complexity
+NA	ref_1	ref_5	260	289	Ankyrin
+NA	ref_1	ref_5	381	413	Ankyrin
+NA	ref_1	ref_7	509	572	coiled coil
+# MBP1_NEUCR
+NA	ref_3	ref_2	31	110	KilA-N
+NA	ref_3	ref_4	130	141	low complexity
+NA	ref_3	ref_4	253	266	low complexity
+NA	ref_3	ref_4	514	525	low complexity
+NA	ref_3	ref_4	554	564	low complexity
+NA	ref_3	ref_4	601	618	low complexity
+NA	ref_3	ref_4	620	629	low complexity
+NA	ref_3	ref_4	636	652	low complexity
+NA	ref_3	ref_4	658	672	low complexity
+NA	ref_3	ref_4	725	735	low complexity
+NA	ref_3	ref_4	752	771	low complexity
+NA	ref_3	ref_5	268	297	Ankyrin
+NA	ref_3	ref_5	390	419	Ankyrin
+NA	ref_3	ref_7	500	550	coiled coil
+# MBP1_SCHPO
+NA	ref_5	ref_2	21	97	KilA-N
+NA	ref_5	ref_4	111	125	low complexity
+NA	ref_5	ref_4	136	145	low complexity
+NA	ref_5	ref_4	176	191	low complexity
+NA	ref_5	ref_4	422	447	low complexity
+NA	ref_5	ref_5	247	276	Ankyrin
+NA	ref_5	ref_5	368	397	Ankyrin
+NA	ref_5	ref_7	457	538	coiled coil
+# MBP1_COPCI
+NA	ref_6	ref_2	23	106	KilA-N
+NA	ref_6	ref_4	170	191	low complexity
+NA	ref_6	ref_4	435	450	low complexity
+NA	ref_6	ref_4	611	626	low complexity
+NA	ref_6	ref_5	270	299	Ankyrin
+NA	ref_6	ref_5	389	418	Ankyrin
+NA	ref_6	ref_5	474	509	Ankyrin
+NA	ref_6	ref_7	500	570	coiled coil
+# MBP1_PUCGR
+NA	ref_8	ref_2	107	190	KilA-N
+NA	ref_8	ref_4	208	227	low complexity
+NA	ref_8	ref_4	273	291	low complexity
+NA	ref_8	ref_5	442	271	Ankyrin
+NA	ref_8	ref_5	475	509	Ankyrin
+NA	ref_8	ref_5	561	590	Ankyrin
+NA	ref_8	ref_7	827	863	coiled coil
+# MBP1_USTMA
+NA	ref_9	ref_2	21	98	KilA-N
+NA	ref_9	ref_4	106	116	low complexity
+NA	ref_9	ref_4	161	183	low complexity
+NA	ref_9	ref_4	657	672	low complexity
+NA	ref_9	ref_4	776	796	low complexity
+NA	ref_9	ref_5	245	274	Ankyrin
+NA	ref_9	ref_5	355	384	Ankyrin
+NA	ref_9	ref_7	581	609	coiled coil
