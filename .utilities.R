@@ -208,7 +208,7 @@ dbInit <- function() {
         sourceDB = character(),
         accession = character(),
         stringsAsFactors = FALSE)
-    attributes(db$feature$ID)$code <- "fea"
+    attributes(db$feature$ID)$code <- "ftr"
 
     # type is one of:
     #     reference e.g. literature reference
@@ -291,18 +291,21 @@ dbConfirmUnique <- function(x) {
 }
 
 
-dbAutoincrement <- function(x, ns = "my") {
+dbAutoincrement <- function(x, ns = "my", code) {
     # input: x: a character vector of keys structured as <namespace>_<table>_<integer>
     # output: a unique key of the same structure, in which the integer part
     # increments the largest integer in that namespace in x by one
 
-    # get the table code either from its original attribute, or (since it gets
-    # lost after merging or rbinding) from the first element in the table
+    # get the table code either as it was passed as a function argument, or, if
+    # it is set as a column attribute (but the attribute gets lost after merging
+    # or rbinding), or from the first element in the table
 
-    if (length(grep("code", names(attributes(x)))) == 1) {
-        code <- attributes(x)$code
-    } else {
-        code <- strsplit(x[1], "_")[[1]][2]
+    if (missing(code)) {
+        if (length(grep("code", names(attributes(x)))) == 1) {
+            code <- attributes(x)$code
+        } else {
+            code <- strsplit(x[1], "_")[[1]][2]
+        }
     }
 
     iKeys <- grep(sprintf("^%s_", ns), x)  # get index of existing keys in ns
@@ -322,6 +325,26 @@ dbAutoincrement <- function(x, ns = "my") {
     }
 }
 
+
+dbGetFeatureSequence <- function(DB, name, feature) {
+    # extracts a protein sequence from DB that matches the
+    # protein name and the feature name, if these two are
+    # unique, and has the start and end coordinates of the
+    # feature annotation.
+
+    proID <- DB$protein$ID[myDB$protein$name == name]
+    if (length(proID) != 1) {stop("name does not match exactly one row.")}
+    ftrID <- DB$feature$ID[myDB$feature$name == feature]
+    if (length(ftrID) != 1) {stop("feature does not match exactly one row.")}
+    fanID <- DB$proteinAnnotation$ID[
+                 DB$proteinAnnotation$protein.ID == proID &
+                 DB$proteinAnnotation$feature.ID == ftrID]
+    if (length(fanID) != 1) {stop("annotation does not match exactly one row.")}
+
+    return(substr(DB$protein$sequence[DB$protein$ID == proID],
+                  DB$proteinAnnotation$start[DB$proteinAnnotation$ID == fanID],
+                  DB$proteinAnnotation$end[DB$proteinAnnotation$ID == fanID]))
+}
 
 
 
