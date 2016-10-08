@@ -275,14 +275,14 @@ refDB$taxonomy <-
 refDB$feature <-
     rbind(refDB$feature,
           data.frame(
-              ID = c("ref_1",
-                     "ref_2",
-                     "ref_3",
-                     "ref_4",
-                     "ref_5",
-                     "ref_6",
-                     "ref_7",
-                     "ref_8"),
+              ID = c("ref_ftr_1",
+                     "ref_ftr_2",
+                     "ref_ftr_3",
+                     "ref_ftr_4",
+                     "ref_ftr_5",
+                     "ref_ftr_6",
+                     "ref_ftr_7",
+                     "ref_ftr_8"),
               name = c("APSES fold",
                        "KilA-N",
                        "AT hook",
@@ -291,7 +291,7 @@ refDB$feature <-
                        "Swi6 fold",
                        "coiled coil",
                        "McInerny 2011"),
-              type.ID = rep("ref_0", 8),
+              type.ID = rep("ref_typ_1", 8),
               description = c("DNA binding domain by similarity to structure",
                               "DNA binding domain by Pfam annotation",
                               "DNA interaction motif by SMART annotation",
@@ -330,13 +330,13 @@ tmp <- read.table("referenceDomainAnnotations.txt",
           strip.white = TRUE,
           stringsAsFactors = FALSE)
 
-# remove the notes column - that's for our reference only, not part of
-# the data model
+# remove the notes column - that is in the text file, only for our reference,
+# not part of the data model
 tmp <- tmp[ , -(ncol(tmp))]
 
 # add table IDs
 for (i in 1:nrow(tmp)) {
-    tmp[i, "ID"] <- dbAutoincrement(tmp$ID, ns = "ref")
+    tmp[i, "ID"] <- dbAutoincrement(tmp$ID, ns = "ref", code = "fan")
 }
 
 # add table to DB
@@ -350,7 +350,7 @@ refDB$proteinAnnotation <-
 refDB$system <-
     rbind(refDB$system,
           data.frame(
-              ID = "ref_1",
+              ID = "ref_sys_1",
               name = "G1/S SACCE",
               notes = paste("Regulates transition from G1 to S phase",
                             "in the yeast cell cycle."),
@@ -362,9 +362,9 @@ refDB$system <-
 refDB$component <-
     rbind(refDB$component,
           data.frame(
-              ID = "ref_1",
-              protein.ID = "ref_4",  # MBP1_SACCE
-              system.ID  = "ref_1",  # G1/S SACCE
+              ID = "ref_cmp_1",
+              protein.ID = "ref_pro_4",  # MBP1_SACCE
+              system.ID  = "ref_sys_1",  # G1/S SACCE
               status = "include",
               notes = paste("Part of MBF complex."),
               stringsAsFactors = FALSE))
@@ -375,9 +375,9 @@ refDB$component <-
 refDB$systemAnnotation <-
     rbind(refDB$systemAnnotation,
           data.frame(
-              ID = "ref_1",
-              system.ID  = "ref_1",  # G1/S SACCE
-              feature.ID = "ref_8",  # PubMed
+              ID = "ref_san_1",
+              system.ID  = "ref_sys_1",  # G1/S SACCE
+              feature.ID = "ref_ftr_8",  # PubMed
               stringsAsFactors = FALSE))
 
 
@@ -386,9 +386,9 @@ refDB$systemAnnotation <-
 refDB$componentAnnotation <-
     rbind(refDB$componentAnnotation,
           data.frame(
-              ID = "ref_1",
-              component.ID  = "ref_1",  # Mbp1 in G1/S SACCE
-              feature.ID = "ref_8",     # PubMed
+              ID = "ref_can_1",
+              component.ID  = "ref_cmp_1",  # Mbp1 in G1/S SACCE
+              feature.ID = "ref_ftr_8",     # PubMed
               stringsAsFactors = FALSE))
 
 
@@ -397,7 +397,7 @@ refDB$componentAnnotation <-
 refDB$type <-
     rbind(refDB$type,
           data.frame(
-                ID = "ref_0",
+                ID = "ref_typ_0",
                 name = "UNDEF",
                 description = "Undefined type",
                 stringsAsFactors = FALSE))
