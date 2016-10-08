@@ -62,7 +62,7 @@
 # You can name the file   "myCode.R"
 #
 
-# == TASK: THE CURRENT ASSIGNMENT ==
+# ==== THE CURRENT ASSIGNMENT ==================================================
 # execute:
 
 file.edit("BCH441_A03.R")
