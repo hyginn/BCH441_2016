@@ -53,17 +53,15 @@
 # In this way, if we merge your working database with the reference database
 # all reference database records will be updated, and all your working records
 # will remain.
-#
+
 # And while we are adding semnatics to keys, we should also identify in which
-# table they are being used by adding some table code. You may remember that I
-# told you: keys should not try to express semantics? Here we have a slightly
-# different situation: since we are not actually constructing an underlying
-# database engine, we will often encounter keys that we use "manually". And in
-# that case it is very helpful to make the key's domain explicit. Each of the
-# tables of the database contains an attribute with a "code" that becomes
-# part of the ID (the primary key) when we create it.
-#
-# The code I wrote to implement was loaded when you typed init().
+# table they are being used. You may remember that I told you: keys should not
+# try to express semantics? Here we have a slightly different situation: since
+# we are not actually constructing an underlying database engine, we will often
+# encounter keys that we use "manually". And in that case it is very helpful to
+# make the key's domain explicit.
+
+# The code I wrote to implement this was loaded when you typed init().
 
 # Let's have a brief look at the new dbAutoincrement() function. You'll see the
 # code as usual when you execute the function name without its parentheses:
@@ -73,11 +71,13 @@ dbAutoincrement
 # The default namespace is "my" - that's the namespace you use. I will use
 # "ref" for all entries of the reference database. Thus you normally won't
 # need to enter the namespace identifier - only I do that.
-#
-dbAutoincrement(refDB$protein, ns=)
-dbAutoincrement(ID, ns = "ref")
 
-# Once the namespaces are thus kept well apart, we won't overwrite each other's work. Merging two table becomes a breeze:
+refDB$protein$ID
+dbAutoincrement(refDB$protein$ID)
+dbAutoincrement(refDB$protein$ID, ns = "ref")
+
+# Once the namespaces are thus kept well apart, we won't overwrite each other's
+# work. Merging two table becomes a breeze:
 
 tableUnion
 
@@ -108,14 +108,14 @@ rhyme$type
 # we introduce a field $version, through which we can ensure that the datamodels
 # have the same schema. If they would have different schemas the merging would
 # break. But we don't merge this single field. (Incidentally: a schema version
-# is not "data", rather we call this "metadata": information _about_ the data.) So
-# we exclude the "version" from the names of elements to merge.
+# is not "data", rather we call this "metadata": information _about_ the data.)
+# So we exclude the "version" from the names of elements to merge.
 #
 # But how to iterate over all tables in a list by name? You might be tempted to
 # try something like
 #
 # n <- names(db)
-# db$n[1], db$n[2] etc.
+# myDB$n[1], myDB$n[2] etc.
 # ... but NO! That's not how the $ operator works.
 #
 # The R community keeps particularly poignant comments from the R-help mailing
@@ -135,15 +135,8 @@ rhyme$type
 
 # === Putting data into the new schema =========================================
 
-# Now, how do we get data into the new schema in the first place? We could write
-# some one-off code to migrate from one schema to the next. Schema migrations in
-# large, complex databases can raise the pulse even of seasoned database admins.
-# But in our case it's really simple. We only need to convert the keys,
-# overwrite the protein and taxonomy tables in the new schema list with yours,
-# and merge. But let's not even do that. Since there is probably only one
-# sequence you need to add, we'll just add it by hand. This takes almost exactly
-# the same syntax as the code you wrote for the last assignment, so you can copy
-# the data from there.
+# Entering the YFO data into the new schema takes almost exactly
+# the same syntax as the code you wrote for the last assignment.
 #
 
 # === TASK: ===
@@ -180,7 +173,7 @@ proteinRow <- data.frame(ID = dbAutoincrement(myDB$protein$ID),
                     taxonomy.ID = myTaxonomyId,
                     sequence = dbSanitizeSequence(mySeq),
                     stringsAsFactors = FALSE)
-myDB$protein <- rbind(db$protein, proteinRow)
+myDB$protein <- rbind(myDB$protein, proteinRow)
 
 # == create the taxonomy entry
 taxonomyRow <- data.frame(ID = myTaxonomyId,
@@ -194,24 +187,21 @@ myDB$taxonomy <- rbind(myDB$taxonomy, taxonomyRow)
 # myDB now contains one record each in two tables. The remaining tables exist
 # but they are empty.
 
-
 # Now let's merge myDB with the data from refDB. refDB should already have been
 # loaded from .utilities.R ; you can also explore the original script with which
 # refDB was created, for your reference: it is create_refDB.R  The database
-# refDB is the default second argument for dbMerge(), so you don't need to
-# specify it. By assigning to result of dbMerge() back to myDB we overwrite the
+# refDB is the default argument for dbMerge(), so you don't need to
+# specify it. By assigning the result of dbMerge() back to myDB we overwrite the
 # previous version.
 
 myDB <- dbMerge(myDB)
 
 str(myDB)
 
-str(myDB)
-
 # check the protein table
 View(myDB$protein[ , c("ID", "name", "RefSeqID")])
 
-# let's compute sequence lengths on the fly (with the function nchar() ) and
+# Let's compute sequence lengths on the fly (with the function nchar() ) and
 # add them to our view. Then we'll open this with the table viewer function
 # View()
 
@@ -256,8 +246,7 @@ myDB$taxonomy[myDB$taxonomy$species == YFO, ]
 # that the object appears in the Environment pane of RStudio (if it wasn't there
 # already), or you may notice that its content has changed if it did exist.
 
-
-
+# == TASK: ==
 # Save myDB so you can recreate it easily when you next open RStudio.
 
 save(myDB, file = "myDB.01.RData")  # Note that I give this a version number!
@@ -312,7 +301,11 @@ BLOSUM62["L", "I"]
 BLOSUM62["R", "W"]
 BLOSUM62["W", "R"]   # the matrix is symmetric!
 
-# Now let's craft code for a dotplot. That's surprisingly simple. We build a matrix that has as many rows as one sequence, as many columns as another. Then we go through every cell of the matrix and enter the pairscore we encounter for the amino acid pair whose position correpsonds to the row and column index. Finally we visualize the matrix in a plot.
+# Now let's craft code for a dotplot. That's surprisingly simple. We build a
+# matrix that has as many rows as one sequence, as many columns as another. Then
+# we go through every cell of the matrix and enter the pairscore we encounter
+# for the amino acid pair whose position corresponds to the row and column
+# index. Finally we visualize the matrix in a plot.
 #
 
 # First we fetch our sequences and split them into single characters.
@@ -363,8 +356,7 @@ image(dotMat)
 # What would similar sequences look like?
 # What do you see?
 
-#
-# You migh notice a thin line of yellow along the diagonal, moving approximately
+#You migh notice a thin line of yellow along the diagonal, moving approximately
 # from bottom left to top right, fading in and out of existence. This is the
 # signature of extended sequence similarity.
 
@@ -410,8 +402,11 @@ dotPlot2(MBP1_SACCE, MBP1_YFO, xlab = "SACCE", ylab = "YFO")  # Our's
 # sequence.
 
 
-# Let's see if we can enhance the contrast between distributed noise and the actual
-# alignment of conserved residues. We can filter the dot matrix with a pattern that enhances diagonally repeated values. Every value in the matrix will be replaced by a weighted average of its neighborhood. Here is  a diagonal-filter:
+# Let's see if we can enhance the contrast between distributed noise and the
+# actual alignment of conserved residues. We can filter the dot matrix with a
+# pattern that enhances diagonally repeated values. Every value in the matrix
+# will be replaced by a weighted average of its neighborhood. Here is  a
+# diagonal-filter:
 
 myFilter <- matrix(numeric(25), nrow = 5)
 myFilter[1, ] <- c( 1, 0, 0, 0, 0)
@@ -433,7 +428,7 @@ dotPlot2(MBP1_SACCE, MBP1_YFO, xlab = "SACCE", ylab = "YFO", f = myFilter)
 
 
 # ==============================================================================
-#        PART THREE: Pairwise Optimal Sequence Alignment
+#        PART THREE: Biostrings Pairwise Alignment
 # ==============================================================================
 
 # Biostrings is one of the basic packages that the Bioconductor software
@@ -460,9 +455,11 @@ toString(s)      # using the Biostrings function toString()
 # to behave exactly like the functions you encountered on the EMBOSS server.
 
 # First: make AAString objects ...
-aaMBP1_SACCE <- AAString(myDB$protein$sequence[myDB$protein$name == "MBP1_SACCE"])
+aaMBP1_SACCE <- AAString(myDB$protein$sequence[myDB$protein$name ==
+                                                   "MBP1_SACCE"])
 my <- paste("MBP1_", biCode(YFO), sep = "")
-aaMBP1_YFO <- AAString(myDB$protein$sequence[myDB$protein$name == my])
+aaMBP1_YFO <-   AAString(myDB$protein$sequence[myDB$protein$name ==
+                                                   my])
 
 ?pairwiseAlignment
 
@@ -530,24 +527,169 @@ writePairwiseAlignments(ali2)   # This has probably only aligned the N-terminal
                                 # high sequence identity:
 percentID(ali2)
 
-# === TASK:
-# Compare the two alignments. I have weighted the local alignment heavily towards an ungapped alignment by setting very high gap penalties. Try changing the gap penalties and see what happens: how does the number of indels change, how does the length of indels change...
+# == TASK: ==
+
+# Compare the two alignments. I have weighted the local alignment heavily
+# towards an ungapped alignment by setting very high gap penalties. Try changing
+# the gap penalties and see what happens: how does the number of indels change,
+# how does the length of indels change...
 
 # Fine. Please return to the Wiki to study BLAST alignment...
 
 
 # ==============================================================================
-#        PART FOUR: Domain annotations
+#        PART FOUR: APSES Domain annotation by alignment
 # ==============================================================================
 
-...
+# In this section we define the YFO APSES sequence by performing a global,
+# optimal sequence alignment of the yeast domain with the full length protein
+# sequence of the protein that was the most similar to the yeast APSES domain.
+#
+
+# I have annotated the yeast APSES domain as a proteinAnnotation in the
+# database. To view the annotation, we can retrieve it via the proteinID and
+# featureID. Here is the yeast protein ID:
+myDB$protein$ID[myDB$protein$name == "MBP1_SACCE"]
+proID <- myDB$protein$ID[myDB$protein$name == "MBP1_SACCE"]
+
+# ... and if you look at the feature table, you can identify the feature ID
+myDB$feature[ , c("ID", "name", "description")]
+myDB$feature$ID[myDB$feature$name == "APSES fold"]
+ftrID <- myDB$feature$ID[myDB$feature$name == "APSES fold"]
+
+# ... and with the two annotations we can pull the entry from the protein
+# annotation table
+myDB$proteinAnnotation[myDB$proteinAnnotation$protein.ID == proID &
+                           myDB$proteinAnnotation$feature.ID == ftrID, ]
+
+myDB$proteinAnnotation$ID[myDB$proteinAnnotation$protein.ID == proID &
+                           myDB$proteinAnnotation$feature.ID == ftrID]
+
+fanID <- myDB$proteinAnnotation$ID[myDB$proteinAnnotation$protein.ID == proID &
+                                myDB$proteinAnnotation$feature.ID == ftrID]
+
+# The annotation record contains the start and end coordinates which we can use
+# to define the APSES domain sequence with a substr() expression.
+substr(myDB$protein$sequence[myDB$protein$ID == proID],
+       myDB$proteinAnnotation$start[myDB$proteinAnnotation$ID == fanID],
+       myDB$proteinAnnotation$end[myDB$proteinAnnotation$ID == fanID])
+
+# Lots of code. But don't get lost. Let's recapitulate what we have done: we have selected from the sequence column of the protein table the sequence whose name is "MBP1_SACCE", and selected from the proteinAnnotation table the start and end coordinates of the annotation that joins an "APSES fold" feature with the sequence, and used the start and end coordinates to extract a substring. The expressions get lengthy, but it's not hard to wrap all of this into a function so that we only need to define name and feature.
+
+dbGetFeatureSequence
+dbGetFeatureSequence(myDB, "MBP1_SACCE", "APSES fold")
+
+
+# Let's convert this to an AAstring and assign it:
+aaMB1_SACCE_APSES <- AAString(dbGetFeatureSequence(myDB,
+                                                   "MBP1_SACCE",
+                                                   "APSES fold"))
+
+# To align, we need the YFO sequence. Here is it's definition again, just
+# in case ...
+
+my <- paste("MBP1_", biCode(YFO), sep = "")
+aaMBP1_YFO <-   AAString(myDB$protein$sequence[myDB$protein$name ==
+                                                   my])
+
+# Now let's align these two sequences of very different length without end-gap
+# penalties using the "overlap" type. "overlap" turns the
+# end-gap penalties off and that is crucially important since
+# the sequences have very different length.
+
+aliApses <-  pairwiseAlignment(
+    aaMB1_SACCE_APSES,
+    aaMBP1_YFO,
+    type = "overlap",
+    substitutionMatrix = "BLOSUM62",
+    gapOpening = 10,
+    gapExtension = 0.5)
+
+# Inspect the result. The aligned sequences should be clearly
+# homologous, and have (almost) no indels. The entire "pattern"
+# sequence from QIYSAR ... to ... KPLFDF  should be matched
+# with the "query". Is this correct?
+writePairwiseAlignments(aliApses)
+
+# If this is correct, you can extract the matched sequence from
+# the alignment object. The syntax is a bit different from what
+# you have seen before: this is an "S4 object", not a list. No
+# worries: as.character() returns a normal string.
+as.character(aliApses@subject)
+
+# Now, what are the aligned start and end coordinates? You can read them from
+# the output of writePairwiseAlignments(), or you can get them from the range of
+# the match.
+
+str(aliApses@subject@range)
+
+# start is:
+aliApses@subject@range@start
+
+# ... and end is:
+aliApses@subject@range@start + aliApses@subject@range@width - 1
+
+# Since we have this section defined now, we can create a feature annotation
+# right away and store it in myDB.  Copy the code-template below to your
+# myCode.R file, edit it to replace the placeholder items with your data:
+#
+#  - The "PROTEIN ID" is to be replaced with the ID of MBP1_YFO
+#  - The "FEATURE ID" is to be replaced with the ID of "APSES fold"
+#  - START and END are to be replaced with the coordinates you geot above
+#
+# Then execute the code and continue below the code template. If you make an
+# error, there are instructions on how to recover, below.
+#
+# ===== begin code template: add a proteinAnnotation to the database =====
+
+# == edit placeholder items
+myProteinID <- "PROTEIN ID"
+myFeatureID <- "FEATURE ID"
+myStart <- START
+myEnd   <- END
+
+# == create the proteinAnnotation entry
+panRow <- data.frame(ID = dbAutoincrement(myDB$proteinAnnotation$ID),
+                         name = myProteinName,
+                         protein.ID = myProteinID,
+                         feature.ID = myFeatureID,
+                         start = myStart,
+                         end = myEnd,
+                         stringsAsFactors = FALSE)
+myDB$proteinAnnotation <- rbind(myDB$proteinAnnotation, panRow)
+
+# == check that this was successful and has the right data
+myDB$proteinAnnotation[nrow(myDB$proteinAnnotation), ]
+
+# ===== end code template ===========================================
+
+# ... continue here.
+# I expect that a correct result would look something like
+#          ID protein.ID feature.ID start end
+# 63 my_fan_1   my_pro_1  ref_ftr_1     6 104
+
+# If you made a mistake, simply overwrite the current version of myDB by loading
+# your saved, good version:  load("myDB.01.RData") and correct your mistake
+
+# If this is correct, save it
+save(myDB, file = "myDB.02.RData")  # Note that it gets a new version number!
+
+# Done with this part. Copy the sequence of the APSES domain of MBP!_YFO - you
+# need it for the reverse BLAST search, and return to the course Wiki.
 
 
 # ==============================================================================
-#        PART FIVE: Multiple sequence alignment
+#        PART FIVE: SMART Domain annotations
 # ==============================================================================
 
-# Intro ...
+
+# ... TBC
+
+# ==============================================================================
+#        PART SIX: Multiple sequence alignment
+# ==============================================================================
+
+# ... TBC
 
 
 
