@@ -1,13 +1,13 @@
-# BCH441_A03.R
+# BCH441_A04.R
 #
 # Purpose:  Supporting scripts for BCH441 (Bioinformatics) at the University of
-# Toronto, Fall 2016 - Assignment 03
+# Toronto, Fall 2016 - Assignment 04
 #
-# Version: 1.1
+# Version: 1.2
 #
-# Date:    2016  09 Author:  Boris Steipe (boris.steipe@utoronto.ca)
+# Date:    2016  10 Author:  Boris Steipe (boris.steipe@utoronto.ca)
 #
-# V 1.1    Fixed typo
+# V 1.2    Sections up to APSES domain annotation complete
 # V 1.0    First code
 #
 # TODO:
