@@ -111,7 +111,7 @@ refDB$protein <-
     rbind(refDB$protein,
           data.frame(
               ID = dbAutoincrement(refDB$protein$ID, ns = "ref"),
-              name = "RES2_SCHPO",
+              name = "MBP1_SCHPO", # actually the Res2 protein
               RefSeqID = "NP_593032",
               UniProtID = "P41412",
               taxonomy.ID = as.integer(4896),
