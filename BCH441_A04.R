@@ -3,11 +3,13 @@
 # Purpose:  Supporting scripts for BCH441 (Bioinformatics) at the University of
 # Toronto, Fall 2016 - Assignment 04
 #
-# Version: 1.3
+# Version: 1.4
 #
 # Date:    2016  10 Author:  Boris Steipe (boris.steipe@utoronto.ca)
 #
-# V 1.3    All sections complete
+# V 1.4    Bugfix: copy/paste error lead to wrong row-structure for an
+#          rbind() to the proteinAnnotation table.
+# V 1.3    All sections complete.
 # V 1.2    Sections up to APSES domain annotation complete
 # V 1.0    First code
 #
@@ -651,7 +653,6 @@ myEnd   <- END
 
 # == create the proteinAnnotation entry
 panRow <- data.frame(ID = dbAutoincrement(myDB$proteinAnnotation$ID),
-                         name = myProteinName,
                          protein.ID = myProteinID,
                          feature.ID = myFeatureID,
                          start = myStart,
