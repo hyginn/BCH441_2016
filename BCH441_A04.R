@@ -3,18 +3,21 @@
 # Purpose:  Supporting scripts for BCH441 (Bioinformatics) at the University of
 # Toronto, Fall 2016 - Assignment 04
 #
-# Version: 1.4
+# Version: 1.5
 #
 # Date:    2016  10 Author:  Boris Steipe (boris.steipe@utoronto.ca)
 #
+# V 1.5    Bugfix: corrected version numbering instructions and included
+#          PSI BLAST instructions as a new section.
 # V 1.4    Bugfix: copy/paste error lead to wrong row-structure for an
 #          rbind() to the proteinAnnotation table.
 # V 1.3    All sections complete.
 # V 1.2    Sections up to APSES domain annotation complete
 # V 1.0    First code
 #
-# TODO:
-#
+# TODO:  Add a few experiments with random expectation values for
+#        the different matrices where the amino acids are drawn from different
+#        distributions.
 #
 # ==============================================================================
 
@@ -681,7 +684,23 @@ save(myDB, file = "myDB.02.RData")  # Note that it gets a new version number!
 
 
 # ==============================================================================
-#        PART FIVE: SMART Domain annotations
+#        PART FIVE: add PSI BLAST results
+# ==============================================================================
+
+# Once you have discovered APSES domain proteins in YFO, you should enter them
+# into your database. Copy and edit your code template that adds entries to the
+# protein table, once for each of your YFO hits.
+#
+# Execute the code and confirm that the proteins have been added to your
+# database with all of their required information. You can check the code in
+# addSACCE_APSESproteins.R and compare this with your code if you get errors.
+# But careful in case you want to reuse that code: dont use "ns = ref" in your
+# dbAutoincrement calls!
+#
+# Finally save the new version of myDB as version 03: "myDB.03.RData"
+
+# ==============================================================================
+#        PART SIX: SMART Domain annotations
 # ==============================================================================
 
 
@@ -689,12 +708,12 @@ save(myDB, file = "myDB.02.RData")  # Note that it gets a new version number!
 # Step one: enter your domain annotations as features into the database.
 #
 # == Update myDB
-# The reference database has changed, so we need to merge it in with myDB.
-load("myDB.02.RData")  # load the previous version of myDB
+# If the reference database has changed, we need to merge it in with myDB.
+load("myDB.03.RData")  # load the previous version of myDB
                        # the new version of refDB was loaded when you
                        # pulled it from GitHub, and then typed init()
 myDB <- dbMerge(myDB)  # merge the two databases and update myDB with the result
-save(myDB, file = "myDB.03.RData") # save the new version
+save(myDB, file = "myDB.04.RData") # save the new version
 
 # == Update myDB
 
@@ -704,13 +723,13 @@ save(myDB, file = "myDB.03.RData") # save the new version
 myDB$feature[ , c("ID", "name", "description")]
 
 # Add every SMART annotated feaure for MBP1_YFO to the database. If you make
-# mistakes, just reload "myDB.03.RData", then run your corrected annotation
-# script again. Execute ...
+# mistakes, just reload the latest version (probably "myDB.04.RData"), then run
+# your corrected annotation script again. Execute ...
 myDB$proteinAnnotation
 # ... to confirm.
 #
 # Once you are sure your annotations are correct, save the database again.
-save(myDB, file = "myDB.04.RData") # save the new version
+save(myDB, file = "myDB.05.RData") # save the new version
 #
 # Now let's plot the annotations.
 #
@@ -799,7 +818,7 @@ for (i in 1:length(iRows)) {
 #
 
 # ==============================================================================
-#        PART SIX: Multiple sequence alignment
+#        PART SEVEN: Multiple sequence alignment
 # ==============================================================================
 
 # We will compute a multiple sequence alignment using the "muscle" algorithm
