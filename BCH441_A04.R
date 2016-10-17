@@ -3,10 +3,13 @@
 # Purpose:  Supporting scripts for BCH441 (Bioinformatics) at the University of
 # Toronto, Fall 2016 - Assignment 04
 #
-# Version: 1.5
+# Version: 1.6
 #
 # Date:    2016  10 Author:  Boris Steipe (boris.steipe@utoronto.ca)
 #
+# V 1.6    - Clarified canonical name for YFO protein - MBP1_<YFO>
+#          - changed code for consistency with a sel / val / assign - pattern
+#          - put all placeholder-itms in <angled brackets>.
 # V 1.5    Bugfix: corrected version numbering instructions and included
 #          PSI BLAST instructions as a new section.
 # V 1.4    Bugfix: copy/paste error lead to wrong row-structure for an
@@ -15,9 +18,10 @@
 # V 1.2    Sections up to APSES domain annotation complete
 # V 1.0    First code
 #
-# TODO:  Add a few experiments with random expectation values for
-#        the different matrices where the amino acids are drawn from different
-#        distributions.
+# TODO:  -  Add a few experiments with random expectation values for
+#           the different matrices where the amino acids are drawn from
+#           different distributions.
+#        -  Add sanity tests / checkpoints
 #
 # ==============================================================================
 
@@ -161,14 +165,15 @@ myDB <- dbInit()   # This creates an empty database with the latest schema
 
 # ===== begin code template: add a protein and an organism to the database =====
 
-# == edit placeholder items
-myBinomial <- "BINOMIAL NAME"
-myTaxonomyId <- as.integer(TAX_ID)
-myProteinName <- "PROTEIN NAME"
-myProteinRefSeqID <- "REFSEQID"
-myProteinUniProtID <- "UNIPROTID"
+# == edit placeholder items!
+myBinomial <- "<BINOMIAL NAME>"    # Name, NOT biCode()
+myTaxonomyId <- as.integer(<TAX_ID>)
+myProteinName <- "<PROTEIN NAME>"  # Name your protein "MBP1_<YFO>" (where <YFO>
+                                   # is a placeholder for the biCode() of YFO)
+myProteinRefSeqID <- "<REFSEQID>"
+myProteinUniProtID <- "<UNIPROTID>"
 mySeq <- "
-SEQUENCE
+<SEQUENCE>
 "
 
 # == create the protein entry
@@ -191,7 +196,8 @@ myDB$taxonomy <- rbind(myDB$taxonomy, taxonomyRow)
 # ... continue here.
 
 # myDB now contains one record each in two tables. The remaining tables exist
-# but they are empty.
+# but they are empty. Check that all the values are correct: just execute
+myDB
 
 # Now let's merge myDB with the data from refDB. refDB should already have been
 # loaded from .utilities.R ; you can also explore the original script with which
@@ -207,6 +213,10 @@ str(myDB)
 # check the protein table
 View(myDB$protein[ , c("ID", "name", "RefSeqID")])
 
+# Is your protein named according to the pattern "MBP1_<YFO>"? It should be.
+# And does the taxonomy table contain the binomial name? It should be the same
+# that you get when you type YFO into the console.
+
 # Let's compute sequence lengths on the fly (with the function nchar() ) and
 # add them to our view. Then we'll open this with the table viewer function
 # View()
@@ -218,22 +228,35 @@ View(cbind(myDB$protein[ , c("ID", "name", "RefSeqID")],
 # About the same? Much shorter? Much longer?
 
 # Is that the right sequence?
-myDB$protein$sequence[myDB$protein$ID == "my_pro_1"]
+sel <- myDB$protein$ID == "my_pro_1"
+myDB$protein$sequence[sel]
 
 # If not, don't continue! Fix the problem first.
 # Let me repeat: If this does not give you the right sequence of the YFO
 #                Mbp1 homologue, DO NOT CONTINUE. Fix the problem.
 
 # Is that the right taxonomy ID and binomial name for YFO?
-myDB$taxonomy[myDB$taxonomy$species == YFO, ]
+sel <- myDB$taxonomy$species == YFO
+myDB$taxonomy[sel, ]
 
 # If not, or if the result was "<0 rows> ... " then DO NOT CONTINUE.
 # Fix the problem first.
+
+# Does this give you the right protein ID for MBP1_<YFO>?
+sel <- dbConfirmUnique(myDB$protein$name == paste("MBP1_", biCode(YFO), sep = ""))
+myDB$protein$ID[sel]
+
+# If not, or if the result was "<0 rows> ... " then DO NOT CONTINUE.
+# Fix the problem first.
+
+#
 #
 # === Saving and loading data ==================================================
 #
-# There are many ways to save data to a file on disk and read it back in. One of
-# the most convenient is the function pair save() and load().
+# Once you have confirmed that myDB has been successfully created and updated
+# and is in a good state, you should make a backup copy. There are many ways to
+# save data to a file on disk and read it back in. One of the most convenient is
+# the function pair save() and load().
 #
 # save() saves an R object to a file. Its signature is
 
@@ -315,9 +338,11 @@ BLOSUM62["W", "R"]   # the matrix is symmetric!
 #
 
 # First we fetch our sequences and split them into single characters.
-MBP1_SACCE <- s2c(myDB$protein$sequence[myDB$protein$name == "MBP1_SACCE"])
-my <- paste("MBP1_", biCode(YFO), sep = "")
-MBP1_YFO <- s2c(myDB$protein$sequence[myDB$protein$name == my])
+sel <- myDB$protein$name == "MBP1_SACCE"
+MBP1_SACCE <- s2c(myDB$protein$sequence[sel])
+
+sel <- myDB$protein$name == paste("MBP1_", biCode(YFO), sep = "")
+MBP1_YFO <- s2c(myDB$protein$sequence[sel])
 
 # Check that we have two character vectors of the expected length.
 str(MBP1_SACCE)
@@ -461,11 +486,11 @@ toString(s)      # using the Biostrings function toString()
 # to behave exactly like the functions you encountered on the EMBOSS server.
 
 # First: make AAString objects ...
-aaMBP1_SACCE <- AAString(myDB$protein$sequence[myDB$protein$name ==
-                                                   "MBP1_SACCE"])
-my <- paste("MBP1_", biCode(YFO), sep = "")
-aaMBP1_YFO <-   AAString(myDB$protein$sequence[myDB$protein$name ==
-                                                   my])
+sel <- myDB$protein$name == "MBP1_SACCE"
+aaMBP1_SACCE <- AAString(myDB$protein$sequence[sel])
+
+sel <- myDB$protein$name == paste("MBP1_", biCode(YFO), sep = "")
+aaMBP1_YFO <-   AAString(myDB$protein$sequence[sel])
 
 ?pairwiseAlignment
 
@@ -556,11 +581,15 @@ percentID(ali2)
 # database. To view the annotation, we can retrieve it via the proteinID and
 # featureID. Here is the yeast protein ID:
 myDB$protein$ID[myDB$protein$name == "MBP1_SACCE"]
+
+# ... assign it for convenience:
 proID <- myDB$protein$ID[myDB$protein$name == "MBP1_SACCE"]
 
 # ... and if you look at the feature table, you can identify the feature ID
 myDB$feature[ , c("ID", "name", "description")]
 myDB$feature$ID[myDB$feature$name == "APSES fold"]
+
+# ... assign it for convenience:
 ftrID <- myDB$feature$ID[myDB$feature$name == "APSES fold"]
 
 # ... and with the two annotations we can pull the entry from the protein
@@ -571,6 +600,7 @@ myDB$proteinAnnotation[myDB$proteinAnnotation$protein.ID == proID &
 myDB$proteinAnnotation$ID[myDB$proteinAnnotation$protein.ID == proID &
                            myDB$proteinAnnotation$feature.ID == ftrID]
 
+# ... assign it for convenience:
 fanID <- myDB$proteinAnnotation$ID[myDB$proteinAnnotation$protein.ID == proID &
                                 myDB$proteinAnnotation$feature.ID == ftrID]
 
@@ -580,7 +610,13 @@ substr(myDB$protein$sequence[myDB$protein$ID == proID],
        myDB$proteinAnnotation$start[myDB$proteinAnnotation$ID == fanID],
        myDB$proteinAnnotation$end[myDB$proteinAnnotation$ID == fanID])
 
-# Lots of code. But don't get lost. Let's recapitulate what we have done: we have selected from the sequence column of the protein table the sequence whose name is "MBP1_SACCE", and selected from the proteinAnnotation table the start and end coordinates of the annotation that joins an "APSES fold" feature with the sequence, and used the start and end coordinates to extract a substring. The expressions get lengthy, but it's not hard to wrap all of this into a function so that we only need to define name and feature.
+# Lots of code. But don't get lost. Let's recapitulate what we have done: we
+# have selected from the sequence column of the protein table the sequence whose
+# name is "MBP1_SACCE", and selected from the proteinAnnotation table the start
+# and end coordinates of the annotation that joins an "APSES fold" feature with
+# the sequence, and used the start and end coordinates to extract a substring.
+# The expressions get lengthy, but it's not hard to wrap all of this into a
+# function so that we only need to define name and feature.
 
 dbGetFeatureSequence
 dbGetFeatureSequence(myDB, "MBP1_SACCE", "APSES fold")
@@ -594,9 +630,8 @@ aaMB1_SACCE_APSES <- AAString(dbGetFeatureSequence(myDB,
 # To align, we need the YFO sequence. Here is it's definition again, just
 # in case ...
 
-my <- paste("MBP1_", biCode(YFO), sep = "")
-aaMBP1_YFO <-   AAString(myDB$protein$sequence[myDB$protein$name ==
-                                                   my])
+sel <- myDB$protein$name == paste("MBP1_", biCode(YFO), sep = "")
+aaMBP1_YFO <- AAString(myDB$protein$sequence[sel])
 
 # Now let's align these two sequences of very different length without end-gap
 # penalties using the "overlap" type. "overlap" turns the
@@ -639,20 +674,20 @@ aliApses@subject@range@start + aliApses@subject@range@width - 1
 # right away and store it in myDB.  Copy the code-template below to your
 # myCode.R file, edit it to replace the placeholder items with your data:
 #
-#  - The "PROTEIN ID" is to be replaced with the ID of MBP1_YFO
-#  - The "FEATURE ID" is to be replaced with the ID of "APSES fold"
-#  - START and END are to be replaced with the coordinates you geot above
+#  - The <PROTEIN ID> is to be replaced with the ID of MBP1_YFO
+#  - The <FEATURE ID> is to be replaced with the ID of "APSES fold"
+#  - <START> and <END> are to be replaced with the coordinates you got above
 #
 # Then execute the code and continue below the code template. If you make an
 # error, there are instructions on how to recover, below.
 #
 # ===== begin code template: add a proteinAnnotation to the database =====
 
-# == edit placeholder items
-myProteinID <- "PROTEIN ID"
-myFeatureID <- "FEATURE ID"
-myStart <- START
-myEnd   <- END
+# == edit all placeholder items!
+myProteinID <- "<PROTEIN ID>"
+myFeatureID <- "<FEATURE ID>"
+myStart <- <START>
+myEnd   <- <END>
 
 # == create the proteinAnnotation entry
 panRow <- data.frame(ID = dbAutoincrement(myDB$proteinAnnotation$ID),
@@ -679,7 +714,7 @@ myDB$proteinAnnotation[nrow(myDB$proteinAnnotation), ]
 # If this is correct, save it
 save(myDB, file = "myDB.02.RData")  # Note that it gets a new version number!
 
-# Done with this part. Copy the sequence of the APSES domain of MBP!_YFO - you
+# Done with this part. Copy the sequence of the APSES domain of MBP1_<YFO> - you
 # need it for the reverse BLAST search, and return to the course Wiki.
 
 
@@ -747,7 +782,8 @@ drawBox <- function(xLeft, xRight, y, colour) {
 plot(c(-1.5, 1.5), c(0, 0), type = "l")
 drawBox(-1, 1, 0.0, "peachpuff")
 
-# Next, we define a function to plot annotations for one protein: the name of the protein, a horizontal grey line for its length, and all of its features.
+# Next, we define a function to plot annotations for one protein: the name of
+# the protein, a horizontal grey line for its length, and all of its features.
 
 plotProtein <- function(DB, ID, y) {
     # DB: protein database, probably you want myDB
