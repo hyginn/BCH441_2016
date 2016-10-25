@@ -3,10 +3,11 @@
 # Purpose:  Supporting scripts for BCH441 (Bioinformatics) at the University of
 # Toronto, Fall 2016 - Assignment 05
 #
-# Version: 1.0
+# Version: 1.1
 #
 # Date:    2016  10 Author:  Boris Steipe (boris.steipe@utoronto.ca)
 #
+# V 1.1    Fix wrong function name
 # V 1.0    First code
 #
 # TODO:
@@ -483,11 +484,11 @@ hist(X)
 
 H.N <- getAtomIndex(apses, H, "N")
 H.O <- getAtomIndex(apses, H, "O")
-dH <- HB.idx(apses, H.N, H.O)
+dH <- HB(apses, H.N, H.O)
 
 E.N <- getAtomIndex(apses, E, "N")
 E.O <- getAtomIndex(apses, E, "O")
-dE <- HB.idx(apses, E.N, E.O)
+dE <- HB(apses, E.N, E.O)
 
 # The plain histogram functions without parameters
 # give us white stacks.
@@ -606,11 +607,11 @@ E <- getSecondary(pdb$sheet)
 
 H.N <- getAtomIndex(pdb, H, "N")
 H.O <- getAtomIndex(pdb, H, "O")
-dH <- HB.idx(pdb, H.N, H.O)
+dH <- HB(pdb, H.N, H.O)
 
 E.N <- getAtomIndex(pdb, E, "N")
 E.O <- getAtomIndex(pdb, E, "O")
-dE <- HB.idx(pdb, E.N, E.O)
+dE <- HB(pdb, E.N, E.O)
 
 brk=seq(2.4, 4.0, 0.1)
 
@@ -669,12 +670,12 @@ for (i in 1:nrow(PDBarchitectures)) {
     H <- getSecondary(pdb$helix)
     H.N <- getAtomIndex(pdb, H, "N", chain)
     H.O <- getAtomIndex(pdb, H, "O", chain)
-    dH <- c(dH, HB.idx(pdb, H.N, H.O))
+    dH <- c(dH, HB(pdb, H.N, H.O))
 
     E <- getSecondary(pdb$sheet)
     E.N <- getAtomIndex(pdb, E, "N", chain)
     E.O <- getAtomIndex(pdb, E, "O", chain)
-    dE <- c(dE, HB.idx(pdb, E.N, E.O))
+    dE <- c(dE, HB(pdb, E.N, E.O))
 }
 
 brk=seq(2.0, 4.0, 0.1)
