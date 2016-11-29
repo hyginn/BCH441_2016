@@ -478,7 +478,7 @@ barplot(logRatio,
 
 
 
-# color the bars by type 
+# color the bars by type.
 # define colors
 chargePlus  <- "#404580"
 chargeMinus <- "#ab3853"
