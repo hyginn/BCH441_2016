@@ -456,7 +456,8 @@ layout(matrix(1), widths=1.0, heights=1.0)
 #
 
 # Print the two trees on one sheet of paper, write your name and student number,
-# and bring it to class as your deliverable for this assignment.
+# and bring it to class as your deliverable for this assignment. Also write two
+# or three sentences about if/how the gene tree matches the species tree or not.
 
 
 
