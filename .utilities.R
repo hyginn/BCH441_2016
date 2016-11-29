@@ -132,6 +132,159 @@ dotPlot2 <- function(A, B,        # sequences
 }
 
 
+pBar <- function(i, l, nCh = 50) {
+    # Draw a progress bar in the console
+    # i: the current iteration
+    # l: the total number of iterations
+    # nCh: width of the progress bar
+    ticks <- round(seq(1, l-1, length.out = nCh))
+    if (i < l) {
+        if (any(i == ticks)) {
+            p <- which(i == ticks)
+            p1 <- paste(rep("#", p), collapse = "")
+            p2 <- paste(rep("-", nCh - p), collapse = "")
+            cat(sprintf("\r|%s%s|", p1, p2))
+            flush.console()
+        }
+    }
+    else { # done
+        cat("\n")
+    }
+}
+
+
+
+writeSeqSet <- function(seqSet,
+                        file = stdout(),
+                        format = "mfa",
+                        blockSize = 50) {
+    # Write a biostrings seqset to console or file in .mfa
+    #  or .ali format.
+    #
+    # seqSet:    the MSA as MsaAAMultipleAlignment or AAStringSet object
+    # file:      output filename. Default to console output.
+    # format:    if format == "mfa", write a multi FASTA output
+    #            if format == "ali", write a Claustal W output
+    # blocksize: number of sequence characters per line.
+    #
+    MAXNAMEWID <- 15 # Maximum name width for "ali" format
+
+    format <- str_trim(format)
+
+    if (missing(seqSet)) {
+        stop("Input object missing from arguments with no default.")
+    }
+
+    # Extract the raw data from the objects depending on
+    # their respective class and put this
+    # into a named vector of strings.
+    if (class(seqSet)[1] == "MsaAAMultipleAlignment") {
+        strings <- character(nrow(seqSet))
+        for (i in 1:nrow(seqSet)) {
+            strings[i] <- as.character(seqSet@unmasked[i])
+            names(strings)[i] <- seqSet@unmasked@ranges@NAMES[i]
+        }
+    }
+    else if (class(seqSet)[1] == "AAStringSet") {
+        strings <- character(length(seqSet))
+        for (i in 1:length(seqSet)) {
+            strings[i] <- as.character(seqSet[i])
+            names(strings)[i] <- seqSet@ranges@NAMES[i]
+        }
+    }
+    else {
+        stop(paste("Input object of class",
+                   class(seqSet)[1],
+                   "can't be handled by this function."))
+    }
+
+    out <- character()
+    pattern <- sprintf(".{1,%d}", blockSize)
+
+    if (format == "mfa") {
+        for (i in 1:length(strings)) {
+            # output FASTA header
+            out <- c(out, sprintf(">%s", names(strings)[i]))
+            # output sequence in blocks
+            out <- c(out, unlist(str_match_all(strings[i], pattern)[[1]]))
+        }
+    } else if (format == "ali") {
+
+        SEP <- paste(rep(" ", MAXNAMEWID), collapse="")
+        out <- c(out, "CLUSTAL W formatted alignment", "")
+
+        allBlocks <- character()
+        for (i in 1:length(strings)) {
+            # make labels for rownames
+            label <- substr(paste(names(strings)[i],
+                                  SEP,
+                                  sep = ""), 1, MAXNAMEWID)
+            label <- paste(label, " ", sep="")
+            # chop strings into blocks
+            blocks <- unlist(str_match_all(strings[i], pattern)[[1]])
+            dim(blocks) <- c(1, length(blocks))
+            rownames(blocks) <- label
+            allBlocks <- rbind(allBlocks, blocks)
+        }
+        for (i in 1:ncol(allBlocks)) {
+            for (j in 1:nrow(allBlocks)) {
+                out <- c(out, sprintf("%s%s",
+                                      rownames(allBlocks)[j],
+                                      allBlocks[j, i]))
+            }
+            out <- c(out, "", "")
+        }
+    }
+    writeLines(out, con = file)
+}
+
+
+maskSet <- function(set,
+                    fGap = (2/3),
+                    cGap="-",
+                    verbose = TRUE) {
+    # mask columns in "set" that contain more
+    # then fGap fraction of cGap characters.
+
+    if (class(set) != "MsaAAMultipleAlignment") {
+        stop(paste("This function needs an object of class",
+                   " MsaAAMultipleAlignment as input."))
+    }
+
+    lenAli <- set@unmasked@ranges@width[1]
+    mat <- matrix(character(nrow(set) * lenAli),
+                  ncol = lenAli)
+    rownames(mat) <- set@unmasked@ranges@NAMES
+    for (i in 1:nrow(set)) {
+        seq <- as.character(set@unmasked[i])
+        mat[i, ] <- unlist(strsplit(seq, ""))
+    }
+    colMask <- logical(lenAli)
+
+    limit <- round(nrow(set) * fGap)
+    for (i in 1:lenAli) {
+        count <- table(mat[ , i])["-"]
+        if (is.na(count)) { # No hyphen
+            count <- 0
+        }
+        colMask[i] <- count <= limit
+    }
+    if (verbose) {
+        cat(sprintf("Masking %4.2f %% of alignment columns.\n",
+                    100 * (1 - (sum(colMask) / length(colMask)))))
+    }
+    mat <- mat[ , colMask]
+    seqSet <- character()
+    for (i in 1:nrow(mat)) {
+        seqSet[i] <- paste(mat[i, ], collapse="")
+    }
+    names(seqSet) <- rownames(mat)
+    return(AAStringSet(seqSet))
+}
+
+
+
+
 
 # ====== DATABASE FUNCTIONS ============================================
 
