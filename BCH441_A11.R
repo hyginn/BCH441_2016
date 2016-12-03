@@ -111,7 +111,6 @@ if (!require(igraph)) {
 iG <- graph_from_adjacency_matrix(G)
 iGxy <- layout_with_graphopt(iG, charge=0.001)   # calculate layout coordinates
 
-oPar <- par(mar= rep(0,4)) # Turn margins off
 
 # The igraph package adds its own function to the collection of plot()
 # functions; R makes the selection which plot function to use based on the class
@@ -121,6 +120,7 @@ oPar <- par(mar= rep(0,4)) # Turn margins off
 #  vertex size - which I define to increase with node-degree
 #  vertex.label - which I set to use our Nnames vector
 
+oPar <- par(mar= rep(0,4)) # Turn margins off
 plot(iG,
      layout = iGxy,
      rescale = FALSE,
@@ -128,9 +128,10 @@ plot(iG,
      ylim = c(min(iGxy[,2]), max(iGxy[,2])) * 1.1,
      vertex.color=heat.colors(max(degree(iG)+1))[degree(iG)+1],
      vertex.size = 800 + (150 * degree(iG)),
-     vertex.label = Nnames,
+     vertex.label = as.character(degree(iG)/2),
+#     vertex.label = Nnames,
      edge.arrow.size = 0)
-par(oPar)
+par(oPar)  # reset plot window
 
 
 # The simplest descriptor of a graph are the number of nodes, edges, and the
@@ -156,10 +157,13 @@ sum(G)
 
 rowSums(G)  # check this against the plot!
 
-# Let's we plot the degree distribution in a histogram:
+# Let's  plot the degree distribution in a histogram:
 rs <- rowSums(G)
 brk <- seq(min(rs)-0.5, max(rs)+0.5, by=1)  # define breaks for the histogram
-hist(rs, breaks=brk, col="#A5CCD5")         # plot the histogram
+hist(rs, breaks=brk, col="#A5CCF5",
+     xlim = c(-1,8), xaxt = "n",
+     main = "Node degrees", xlab = "Degree", ylab = "Number")  # plot histogram
+axis(side = 1, at = 0:7)
 
 # Note: I don't _have_ to define breaks, the hist() function usually does so
 # quite well, automatically. But for this purpose I want the columns of the
@@ -205,13 +209,19 @@ par(oPar)
 dg <- degree(iG200)/2   # here, we use the iGraph function degree()
                         # not rowsums() from base R.
 brk <- seq(min(dg)-0.5, max(dg)+0.5, by=1)
-hist(dg, breaks=brk, col="#A5CCD5")
+hist(dg, breaks=brk, col="#A5CCF5",
+     xlim = c(-1,11), xaxt = "n",
+     main = "Node degrees", xlab = "Degree", ylab = "Number")  # plot histogram
+axis(side = 1, at = 0:10)
+
+
 
 # Note the characteristic peak of this distribution: this is not "scale-free". Here is a log-log plot of frequency vs. degree-rank:
 
-freqRank <- table(dg)
+(freqRank <- table(dg))
 plot(log10(as.numeric(names(freqRank)) + 1),
      log10(as.numeric(freqRank)), type = "b",
+     pch = 21, bg = "#A5CCF5",
      xlab = "log(Rank)", ylab = "log(frequency)",
      main = "200 nodes in a random network")
 
@@ -247,16 +257,21 @@ par(oPar)
 # "power". Feel encouraged to change "power" and get a sense for what difference
 # this makes. Also: note that the graph has only a single component.
 
-# What's the dgree distribution of this graph?
-dg <- degree(GBA)/2
+# What's the degree distribution of this graph?
+(dg <- degree(GBA))
 brk <- seq(min(dg)-0.5, max(dg)+0.5, by=1)
-hist(dg, breaks=brk, col="#A5D5CC")
+hist(dg, breaks=brk, col="#A5D5CC",
+     xlim = c(0,30), xaxt = "n",
+     main = "Node degrees 200 nodes PA graph",
+     xlab = "Degree", ylab = "Number")
+axis(side = 1, at = seq(0, 30, by=5))
 
-# Most nodes have a degree of 1, but one node has a degree of 14.
+# Most nodes have a degree of 1, but one node has a degree of 28.
 
-freqRank <- table(dg)
+(freqRank <- table(dg))
 plot(log10(as.numeric(names(freqRank)) + 1),
      log10(as.numeric(freqRank)), type = "b",
+     pch = 21, bg = "#A5F5CC",
      xlab = "log(Rank)", ylab = "log(frequency)",
      main = "200 nodes in a preferential-attachment network")
 
@@ -264,10 +279,11 @@ plot(log10(as.numeric(names(freqRank)) + 1),
 # one. That behaviour smooths out in larger graphs:
 #
 X <- sample_pa(100000, power = 0.8)  # 100,000 nodes
-freqRank <- table(degree(X)/2)
+freqRank <- table(degree(X))
 plot(log10(as.numeric(names(freqRank)) + 1),
      log10(as.numeric(freqRank)), type = "b",
      xlab = "log(Rank)", ylab = "log(frequency)",
+     pch = 21, bg = "#A5F5CC",
      main = "100,000 nodes in a random, scale-free network")
 rm(X)
 
@@ -371,17 +387,22 @@ plot(iGRG,
 par(oPar)
 
 # degree distribution:
-dg <- degree(iGRG)/2
+(dg <- degree(iGRG)/2)
 brk <- seq(min(dg)-0.5, max(dg)+0.5, by=1)
-hist(dg, breaks=brk, col="#CCA5D5")
+hist(dg, breaks=brk, col="#FCD6E2",
+     xlim = c(0, 25), xaxt = "n",
+     main = "Node degrees: 200 nodes RG graph",
+     xlab = "Degree", ylab = "Number")
+axis(side = 1, at = c(0, min(dg):max(dg)))
 
 # You'll find that this is kind of in-between the random, and the scale-free
 # graph. We do have hubs, but they are not as extreme as in the scale-free case;
-# and we have have much less singletons than the random graph.
+# and we have have no singletons, in contrast to the random graph.
 
-freqRank <- table(dg)
+(freqRank <- table(dg))
 plot(log10(as.numeric(names(freqRank)) + 1),
      log10(as.numeric(freqRank)), type = "b",
+     pch = 21, bg = "#FCD6E2",
      xlab = "log(Rank)", ylab = "log(frequency)",
      main = "200 nodes in a random geometric network")
 
@@ -641,22 +662,19 @@ gSTR <- graph_from_data_frame(STRINGedges)
 compSTR <- components(gSTR)
 summary(compSTR) # our graph is fully connected!
 
-
-hist(log(degree(gSTR)))
-# this actually looks rather scale-free
-
 dg <- degree(gSTR)
-hist(log(dg), col="#EEB544")
+hist(log(dg), col="#FEE0AF")
+# this actually does look rather scale-free
 
-freqRank <- table(dg)
+(freqRank <- table(dg))
 plot(log10(as.numeric(names(freqRank)) + 1),
      log10(as.numeric(freqRank)), type = "b",
+     pch = 21, bg = "#FEE0AF",
      xlab = "log(Rank)", ylab = "log(frequency)",
      main = "6,500 nodes from the human functional interaction network")
 
-# This looks very scale-free but there seems to be a discontinuity in the
-# middle! What does that mean?
-
+# This looks very scale-free indeed.
+#
 # Now explore some more:
 
 # === CLIQUES   ========
