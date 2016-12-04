@@ -3,11 +3,12 @@
 # Purpose:  Supporting scripts for BCH441 (Bioinformatics) at the University of
 # Toronto, Fall 2016 - Assignment 11
 #
-# Version: 1.0
+# Version: 1.1
 #
 # Date:    2016  12
 # Author:  Boris Steipe (boris.steipe@utoronto.ca)
 #
+# V 1.1    Fixed typo in submission instructions
 # V 1.0    First code
 #
 # TODO:
@@ -809,9 +810,10 @@ for (ID in ENSPsel) {
 #  ... are you surprised? (I am! Really.)
 
 # Final task: Write a loop that will go through your list and
-#    --  print each ID,
-#    --  print the first column's symbol, and
-#    --  print the first column's wikigene description.
+#    for each ID:
+#    --  print the ID,
+#    --  print the first row's symbol, and
+#    --  print the first row's wikigene description.
 #
 # (Hint, you can structure your loop in the same way as the loop that
 # created CPdefs. )
