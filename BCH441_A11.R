@@ -549,7 +549,6 @@ plot(iG,
      vertex.size = 20 + (10 * degree(iG)),
      vertex.label = Nnames,
      edge.arrow.size = 0)
-
 par(oPar)
 
 # Note that the betweenness - the number of shortest paths that pass through a
@@ -565,7 +564,9 @@ par(oPar)
 bCiGRG <- centr_betw(iGRG)  # calculate betweenness centrality
 
 nodeBetw <- bCiGRG$res
-nodeBetw <- round(log(nodeBetw +1)) + 1
+nodeBetw <- round((log(nodeBetw +1))^2.5) + 1
+
+# colours and size proportional to betweenness
 
 oPar <- par(mar= rep(0,4)) # Turn margins off
 plot(iGRG,
@@ -574,10 +575,9 @@ plot(iGRG,
      xlim = c(min(iGRGxy[,1]), max(iGRGxy[,1])),
      ylim = c(min(iGRGxy[,2]), max(iGRGxy[,2])),
      vertex.color=heat.colors(max(nodeBetw))[nodeBetw],
-     vertex.size = 0.1 + (0.1 * degree(iGRG)),
+     vertex.size = 0.1 + (0.03 * nodeBetw),
      vertex.label = "",
      edge.arrow.size = 0)
-
 par(oPar)
 
 diameter(iGRG)
